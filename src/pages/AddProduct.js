@@ -13,9 +13,7 @@ export default function AddProduct(props) {
     if (params.id) {
         // Data Exists
         product = productData.filter(product => {
-            if (product.id == params.id) {
-                return product
-            }
+            return product.id == params.id
         });
     }
 
