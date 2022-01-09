@@ -1,9 +1,9 @@
 import {Link, useNavigate, useParams} from "react-router-dom";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {INVENTORY_STORAGE_KEY} from "../helper/constant";
 
 export default function AddProduct(props) {
-    const navigate  = useNavigate();
+    const navigate = useNavigate();
 
     const productData = JSON.parse(localStorage.getItem(INVENTORY_STORAGE_KEY) || "[]");
 
@@ -23,23 +23,38 @@ export default function AddProduct(props) {
     const [displayUnit, setDisplayUnit] = useState(product != null ? product[0].displayUnit : '');
     const [tax, setTax] = useState(product != null ? product[0].tax : '');
     const [price, setPrice] = useState(product != null ? product[0].price : '');
-    const [productType, setProductType] = useState(product != null ? product[0].productType : '');
+    const [productType, setProductType] = useState(product != null ? product[0].productType : 'chocolate');
     const [description, setDescription] = useState(product != null ? product[0].description : '');
+
+    const [empty, setEmpty] = useState(false)
 
     const addData = () => {
 
-        if (product != null) {
-            let objIndex = productData.findIndex((obj => obj.id == params.id));
-            productData[objIndex] = {id: parseInt(params.id), name, code, displayUnit, tax, price, productType, description}
-        } else {
-            productData.push({
-                id: Math.floor(Math.random() * 10000),
-                name, code, displayUnit, tax, price, productType, description
-            });
-        }
+        if (!!name && !!code && !!displayUnit && !!tax && !!price && !!productType && !!description) {
+            if (product != null) {
+                let objIndex = productData.findIndex((obj => obj.id == params.id));
+                productData[objIndex] = {
+                    id: parseInt(params.id),
+                    name,
+                    code,
+                    displayUnit,
+                    tax,
+                    price,
+                    productType,
+                    description
+                }
+            } else {
+                productData.push({
+                    id: Math.floor(Math.random() * 10000),
+                    name, code, displayUnit, tax, price, productType, description
+                });
+            }
 
-        navigate('/');
-        localStorage.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(productData));
+            navigate('/');
+            localStorage.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(productData));
+        } else {
+            setEmpty(true)
+        }
     }
 
     return (
@@ -137,7 +152,7 @@ export default function AddProduct(props) {
                             </div>
                         </div>
 
-                        <div className="flex flex-wrap -mx-3 mb-6">
+                        <div className="flex flex-wrap -mx-3 mb-4">
                             <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
                                 <label className="block uppercase tracking-widest text-white text-xs font-bold mb-2"
                                        htmlFor="description">
@@ -151,6 +166,10 @@ export default function AddProduct(props) {
                                           name="description" id="" cols="30" rows="5"/>
                             </div>
                         </div>
+
+                        {empty && (
+                            <p className="bg-red-300 text-red-800 font-semibold inline-block px-2 py-2 rounded">All fields must be filled</p>
+                        )}
                     </div>
                 </div>
 
